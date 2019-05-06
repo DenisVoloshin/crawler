@@ -25,15 +25,15 @@ public class ConfigurationManager {
         return this.appConfig.getDepth();
     }
 
-    public String getCachePath() {
-        return this.appConfig.getCachePath();
+    public String getDBRootFolder() {
+        return this.appConfig.getDbRootFolder();
     }
 
     public String toString() {
         String configAsString = "Configuration:\n" +
                 "rootUrl:" + this.appConfig.getRootUrl() + "\n" +
                 "depth:" + this.appConfig.getDepth() + "\n" +
-                "cache path:" + this.appConfig.getCachePath() + "\n";
+                "cache path:" + this.appConfig.getDbRootFolder() + "\n";
 
         return configAsString;
     }

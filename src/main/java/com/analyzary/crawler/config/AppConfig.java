@@ -3,7 +3,7 @@ package com.analyzary.crawler.config;
 public class AppConfig {
     private String rootUrl;
     private int depth;
-    private String cachePath;
+    private String dbRootFolder;
 
     public String getRootUrl() {
         return rootUrl;
@@ -21,11 +21,12 @@ public class AppConfig {
         this.depth = depth;
     }
 
-    public String getCachePath() {
-        return cachePath;
+    public String getDbRootFolder() {
+        return dbRootFolder;
+
     }
 
-    public void setCachePath(String cachePath) {
-        this.cachePath = cachePath;
+    public void setDbRootFolder(String dbRootFolder) {
+        this.dbRootFolder = dbRootFolder;
     }
 }

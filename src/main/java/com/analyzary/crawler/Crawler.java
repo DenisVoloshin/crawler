@@ -4,6 +4,7 @@ import com.analyzary.crawler.analyse.HTMLPageAnalyser;
 import com.analyzary.crawler.cache.PersistentCache;
 import com.analyzary.crawler.config.ConfigurationManager;
 import com.analyzary.crawler.executor.MainController;
+import com.analyzary.crawler.monitor.CrawlerMonitor;
 import com.analyzary.crawler.net.OkHttpConnector;
 import com.analyzary.crawler.queue.CrawlerWorkersQueue;
 
@@ -15,17 +16,19 @@ public class Crawler {
 
     ConfigurationManager configurationManager;
 
-    public Crawler(ConfigurationManager configurationManager){
+    public Crawler(ConfigurationManager configurationManager) {
         this.configurationManager = configurationManager;
     }
 
-    public void start(){
+    public void start() {
         logger.info("Crawler started");
+        CrawlerMonitor.getInstance().start();
         logger.info(configurationManager.toString());
+        long start = System.currentTimeMillis();
 
-        CrawlerWorkersQueue crawlerQueue  = new CrawlerWorkersQueue();
-        PersistentCache crawlerCache  = new PersistentCache(configurationManager);
-        OkHttpConnector connector  = new OkHttpConnector();
+        CrawlerWorkersQueue crawlerQueue = new CrawlerWorkersQueue();
+        PersistentCache crawlerCache = new PersistentCache(configurationManager);
+        OkHttpConnector connector = new OkHttpConnector();
         HTMLPageAnalyser htmlPageAnalyser = new HTMLPageAnalyser();
 
         MainController mainController = new MainController(
@@ -37,10 +40,12 @@ public class Crawler {
                 crawlerCache);
         mainController.execute();
         logger.info("Crawler stopped");
+        System.out.println(HTMLPageAnalyser.createReport(crawlerCache.getMetaData()));
+        CrawlerMonitor.getInstance().stop();
         System.exit(0);
     }
 
-    public void stop(){
+    public void stop() {
         logger.info("Crawler stopped");
     }
 }

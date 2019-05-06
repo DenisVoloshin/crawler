@@ -5,4 +5,5 @@ public interface CrawlerCache<K, V> {
     V get(K key);
     void load();
     void store();
+    void stop();
 }

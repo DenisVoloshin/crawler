@@ -1,11 +1,11 @@
-package com.analyzary.crawler.cache;
+package com.analyzary.crawler.storage;
 
 import com.google.gson.Gson;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class CrawlerCacheEntry {
+public class HtmlPageMetaData {
 
     private String lastModificationDate;
     private int depth;
@@ -13,16 +13,35 @@ public class CrawlerCacheEntry {
     private byte[] data;
     private List<String> links;
     private String url;
+    private int responseCode;
+
+    // There is nothing in the GSON instance that makes it related to a specific instance.
+    private static Gson jsonManager = new Gson();
 
 
-    public CrawlerCacheEntry(String url, String lastModificationDate, List<String> links) {
+    public HtmlPageMetaData(String json) {
+        HtmlPageMetaDataJSON htmlPageMetaDataJSON = jsonManager.fromJson(json, HtmlPageMetaDataJSON.class);
+        this.lastModificationDate = htmlPageMetaDataJSON.lastModificationDate;
+        this.links = htmlPageMetaDataJSON.links;
+        this.url = htmlPageMetaDataJSON.url;
+        this.depth = htmlPageMetaDataJSON.depth;
+        this.responseCode = htmlPageMetaDataJSON.responseCode;
+    }
+
+    public HtmlPageMetaData(String url, int depth, String lastModificationDate, int responseCode, List<String> links) {
         this.lastModificationDate = lastModificationDate;
         this.links = links;
         this.url = url;
+        this.responseCode = responseCode;
+        this.depth = depth;
     }
 
     public String getUrl() {
         return url;
+    }
+
+    public int getResponseCode() {
+        return responseCode;
     }
 
     @Nullable
@@ -60,20 +79,26 @@ public class CrawlerCacheEntry {
 
     public String toJSON() {
         Gson gson = new Gson();
-        return gson.toJson(new CrawlerCacheEntryJSON(lastModificationDate, depth, links, url));
+        return gson.toJson(new HtmlPageMetaDataJSON(lastModificationDate, depth, responseCode, links, url));
     }
 
-    private static class CrawlerCacheEntryJSON {
+    public String fromJSON(String json) {
+        return jsonManager.toJson(new HtmlPageMetaDataJSON(lastModificationDate, depth, responseCode, links, url));
+    }
+
+    private static class HtmlPageMetaDataJSON {
         private String lastModificationDate;
         private int depth;
         private List<String> links;
         private String url;
+        private int responseCode;
 
-        public CrawlerCacheEntryJSON(String lastModificationDate, int depth, List<String> links, String url) {
+        public HtmlPageMetaDataJSON(String lastModificationDate, int depth, int responseCode, List<String> links, String url) {
             this.lastModificationDate = lastModificationDate;
             this.depth = depth;
             this.links = links;
             this.url = url;
+            this.responseCode = responseCode;
         }
 
         public String getLastModificationDate() {
@@ -82,6 +107,14 @@ public class CrawlerCacheEntry {
 
         public void setLastModificationDate(String lastModificationDate) {
             this.lastModificationDate = lastModificationDate;
+        }
+
+        public int getResponseCode() {
+            return responseCode;
+        }
+
+        public void setResponseCode(int responseCode) {
+            this.responseCode = responseCode;
         }
 
         public int getDepth() {

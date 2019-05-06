@@ -13,4 +13,5 @@ public interface Connector {
     public final static String LAST_MODIFIED = "Last-Modified";
 
     void executeRequest(CrawlerRequest crawlerRequest);
+    void close();
 }

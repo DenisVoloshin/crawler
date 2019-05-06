@@ -2,12 +2,15 @@ package com.analyzary.crawler;
 
 import com.analyzary.crawler.config.AppConfig;
 import com.analyzary.crawler.config.ConfigurationManager;
+import com.analyzary.crawler.monitor.CrawlerMonitor;
 
-import java.io.File;
+import java.io.*;
 import java.nio.file.Paths;
+import java.rmi.server.ExportException;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class CrawlerApplication {
 
@@ -16,6 +19,9 @@ public class CrawlerApplication {
             "usage: com.analyzary.crawler.CrawlerApplication \n" +
             " -r,--root <arg>    URL of the root page \n" +
             " -d,--depth <arg>   depth limit";
+
+
+
 
 
     public static void main(String[] args) {
@@ -48,7 +54,7 @@ public class CrawlerApplication {
 
         AppConfig appConfig = new AppConfig();
         appConfig.setDepth(depthAsInt);
-        appConfig.setCachePath(Paths.get("").toAbsolutePath().toString() + File.separator + "cache");
+        appConfig.setDbRootFolder(Paths.get("../").toAbsolutePath().toString() + File.separator + "crawler_cache");
         appConfig.setRootUrl(rootUrl);
 
         ConfigurationManager configurationManager = ConfigurationManager.getInstance();

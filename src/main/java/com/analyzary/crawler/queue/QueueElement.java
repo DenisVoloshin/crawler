@@ -1,20 +1,24 @@
 package com.analyzary.crawler.queue;
 
+import javax.annotation.Nullable;
+
 public class QueueElement {
-    private String page;
+    @Nullable
+    private String url;
+
     private int depth;
 
-    public QueueElement(String page, int depth) {
-        this.page = page;
+    public QueueElement(String url, int depth) {
+        this.url = url;
         this.depth = depth;
     }
 
-    public String getPage() {
-        return page;
+    public String getUrl() {
+        return url;
     }
 
-    public void setPage(String page) {
-        this.page = page;
+    public void setUrl(String page) {
+        this.url = page;
     }
 
     public int getDepth() {

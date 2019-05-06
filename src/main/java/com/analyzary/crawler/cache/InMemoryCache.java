@@ -20,4 +20,9 @@ public class InMemoryCache implements CrawlerCache<String, String> {
     public void store() {
 
     }
+
+    @Override
+    public void stop() {
+
+    }
 }

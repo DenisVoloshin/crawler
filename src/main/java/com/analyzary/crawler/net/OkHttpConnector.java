@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 
 public class OkHttpConnector implements Connector {
 
-
     private static OkHttpClient client;
 
     static {
@@ -19,10 +18,12 @@ public class OkHttpConnector implements Connector {
                 .followRedirects(true)
                 .followSslRedirects(true)
                 .cache(null)
-                .connectTimeout(5, TimeUnit.SECONDS)
+                .connectionPool(new ConnectionPool(100, 10, TimeUnit.SECONDS))
+                .connectTimeout(2, TimeUnit.SECONDS)
                 .writeTimeout(0, TimeUnit.SECONDS)
                 .readTimeout(5, TimeUnit.SECONDS).build();
     }
+
 
     @Override
     public void executeRequest(CrawlerRequest crawlerRequest) {
@@ -42,6 +43,12 @@ public class OkHttpConnector implements Connector {
             Request request = builder.head().build();
             execute(request, crawlerRequest.getCallback());
         }
+    }
+
+    @Override
+    public void close() {
+        client.dispatcher().executorService().shutdown();
+        client.connectionPool().evictAll();
     }
 
 
@@ -65,7 +72,7 @@ public class OkHttpConnector implements Connector {
 
                     byte[] data = new byte[0];
 
-                    if (response.code() != NOT_MODIFIED_304) {
+                    if (response.code() != NOT_MODIFIED_304 && request.method().equals(CrawlerRequest.Method.GET.toString())) {
                         data = response.body().bytes();
                     }
 

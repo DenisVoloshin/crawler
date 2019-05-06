@@ -1,12 +1,14 @@
 package com.analyzary.crawler.executor;
 
 import com.analyzary.crawler.analyse.HTMLPageAnalyser;
-import com.analyzary.crawler.cache.PersistentCache;
+import com.analyzary.crawler.cache.CrawlerCache;
 import com.analyzary.crawler.config.ConfigurationManager;
-import com.analyzary.crawler.net.OkHttpConnector;
+import com.analyzary.crawler.monitor.CrawlerMonitor;
+import com.analyzary.crawler.net.Connector;
 import com.analyzary.crawler.queue.CrawlerWorkersQueue;
 import com.analyzary.crawler.queue.QueueElement;
 
+import java.lang.management.MonitorInfo;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -23,24 +25,24 @@ public class MainController {
     private ThreadPoolExecutor queueListenersExecutor;
 
     private int workersExecutorSize = 200;
-    private int queueListenersExecutorSize = 5;
+    private int queueListenersExecutorSize = 2;
 
     private List<QueueListener> queueListeners;
     private CrawlerWorkersQueue crawlerWorkersQueue;
 
-    private OkHttpConnector connector;
+    private Connector connector;
     private String url;
     private HTMLPageAnalyser htmlPageAnalyser;
-    private PersistentCache crawlerCache;
+    private CrawlerCache crawlerCache;
     private ConfigurationManager configurationManager;
 
 
     public MainController(ConfigurationManager configurationManager,
                           CrawlerWorkersQueue crawlerWorkersQueue,
-                          OkHttpConnector connector,
+                          Connector connector,
                           String url,
                           HTMLPageAnalyser htmlPageAnalyser,
-                          PersistentCache crawlerCache) {
+                          CrawlerCache crawlerCache) {
 
 
         logger.info("MainController started");
@@ -62,24 +64,27 @@ public class MainController {
                 .collect(toList());
         queueListeners.stream().forEach(queueListener -> queueListenersExecutor.submit(queueListener));
 
-        workersExecutor.submit(createWorker(url, 1));
+        workersExecutor.submit(createWorker(url, 0));
 
         try {
             workersExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
         }
 
-        stop();
         logger.info("MainController stopped");
     }
 
     public void stop() {
-        queueListeners.stream().forEach(queueListener -> queueListener.gracefullStop());
-        synchronized (crawlerWorkersQueue) {
-            crawlerWorkersQueue.notifyAll();
-        }
         workersExecutor.shutdown();
         queueListenersExecutor.shutdown();
+
+        try {
+            workersExecutor.awaitTermination(60, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+        }
+
+        crawlerCache.stop();
+        connector.close();
     }
 
 
@@ -101,25 +106,27 @@ public class MainController {
                         synchronized (crawlerWorkersQueue) {
                             crawlerWorkersQueue.wait();
                         }
-
-                        if (crawlerWorkersQueue.getSize() == 0 &&
-                                workersExecutor.getQueue().size() == 0) {
-                            stop();
-                        }
                     } catch (InterruptedException e) {
                         logger.severe(e.getMessage());
                     }
                 }
+                CrawlerMonitor.getInstance().setQueueSize(crawlerWorkersQueue.getSize());
+                CrawlerMonitor.getInstance().setActiveCrawlerWorkers(workersExecutor.getActiveCount());
+                CrawlerMonitor.getInstance().setWaitingCrawlerWorkers(workersExecutor.getQueue().size());
 
-                if (queueElement.getDepth() < configurationManager.getCrawlingDepth()) {
-                    logger.info("queueElement.getDepth()  [" + queueElement.getDepth() + "] queue size: "
+                if (queueElement.getDepth() < configurationManager.getCrawlingDepth() && queueElement.getUrl() != null) {
+                    //if (crawlerWorkersQueue.getSize() % 20 == 0) {
+                    logger.fine("queueElement.getDepth()  [" + queueElement.getDepth() + "] queue size: "
                             + crawlerWorkersQueue.getSize() + " active threads:" + workersExecutor.getActiveCount() + " " +
                             "in queue:" + workersExecutor.getQueue().size());
-                    workersExecutor.submit(createWorker(queueElement.getPage(), queueElement.getDepth()));
+                    // }
+                    workersExecutor.submit(createWorker(queueElement.getUrl(), queueElement.getDepth()));
                 } else {
                     if (crawlerWorkersQueue.getSize() == 0 &&
+                            workersExecutor.getActiveCount() == 0 &&
                             workersExecutor.getQueue().size() == 0) {
-                        stop();
+                        gracefullStop();
+                        MainController.this.stop();
                     }
                 }
             }
