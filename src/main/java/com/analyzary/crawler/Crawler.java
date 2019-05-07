@@ -7,6 +7,7 @@ import com.analyzary.crawler.executor.MainController;
 import com.analyzary.crawler.monitor.CrawlerMonitor;
 import com.analyzary.crawler.net.OkHttpConnector;
 import com.analyzary.crawler.queue.CrawlerWorkersQueue;
+import com.analyzary.crawler.storage.CrawlerDAO;
 
 import java.util.logging.Logger;
 
@@ -24,7 +25,6 @@ public class Crawler {
         logger.info("Crawler started");
         CrawlerMonitor.getInstance().start();
         logger.info(configurationManager.toString());
-        long start = System.currentTimeMillis();
 
         CrawlerWorkersQueue crawlerQueue = new CrawlerWorkersQueue();
         PersistentCache crawlerCache = new PersistentCache(configurationManager);
@@ -37,7 +37,8 @@ public class Crawler {
                 connector,
                 configurationManager.getRootPoint(),
                 htmlPageAnalyser,
-                crawlerCache);
+                crawlerCache,
+                CrawlerDAO.getInstance());
         mainController.execute();
         logger.info("Crawler stopped");
         System.out.println(HTMLPageAnalyser.createReport(crawlerCache.getMetaData()));

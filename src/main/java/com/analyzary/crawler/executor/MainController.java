@@ -7,6 +7,7 @@ import com.analyzary.crawler.monitor.CrawlerMonitor;
 import com.analyzary.crawler.net.Connector;
 import com.analyzary.crawler.queue.CrawlerWorkersQueue;
 import com.analyzary.crawler.queue.QueueElement;
+import com.analyzary.crawler.storage.CrawlerDAO;
 
 import java.lang.management.MonitorInfo;
 import java.util.Collections;
@@ -35,6 +36,7 @@ public class MainController {
     private HTMLPageAnalyser htmlPageAnalyser;
     private CrawlerCache crawlerCache;
     private ConfigurationManager configurationManager;
+    private CrawlerDAO crawlerDAO;
 
 
     public MainController(ConfigurationManager configurationManager,
@@ -42,7 +44,8 @@ public class MainController {
                           Connector connector,
                           String url,
                           HTMLPageAnalyser htmlPageAnalyser,
-                          CrawlerCache crawlerCache) {
+                          CrawlerCache crawlerCache,
+                          CrawlerDAO crawlerDAO) {
 
 
         logger.info("MainController started");
@@ -52,6 +55,7 @@ public class MainController {
         this.url = url;
         this.htmlPageAnalyser = htmlPageAnalyser;
         this.crawlerCache = crawlerCache;
+        this.crawlerDAO = crawlerDAO;
 
         workersExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(workersExecutorSize);
         queueListenersExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(queueListenersExecutorSize);
@@ -90,7 +94,7 @@ public class MainController {
 
     private CrawlerWorker createWorker(String url, int depth) {
         return new CrawlerWorker(connector, crawlerWorkersQueue, url, depth,
-                configurationManager.getCrawlingDepth(), htmlPageAnalyser, crawlerCache);
+                configurationManager.getCrawlingDepth(), htmlPageAnalyser, crawlerCache, crawlerDAO);
     }
 
     private class QueueListener implements Runnable {

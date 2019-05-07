@@ -30,7 +30,7 @@ public class FileSystemCrawlerDB implements CrawlerDB {
 
     @Override
     public void createCollection(String name) {
-        File collection = new File(dbName + File.separator + name);
+        File collection = new File(configurationManager.getDBRootFolder() + File.separator + dbName + File.separator + name);
         if (!collection.exists()) {
             collection.mkdir();
             collections.put(name, new FileSystemDBCollection(dbName, name, configurationManager));
@@ -40,7 +40,7 @@ public class FileSystemCrawlerDB implements CrawlerDB {
     @Override
     @CheckForNull
     public CrawlerDBCollection getCollection(String name) {
-        File collection = new File(dbName + File.separator + name);
+        File collection = new File(configurationManager.getDBRootFolder() + File.separator + dbName + File.separator + name);
         if (collections.get(name) != null) {
             return collections.get(name);
         } else if (!collection.exists()) {
@@ -53,14 +53,14 @@ public class FileSystemCrawlerDB implements CrawlerDB {
 
     @Override
     public void deleteCollection(String name) {
-        File collection = new File(dbName + File.separator + name);
+        File collection = new File(configurationManager.getDBRootFolder() + File.separator + dbName + File.separator + name);
         clearCollection(name);
         collection.delete();
     }
 
     @Override
     public void clearCollection(String name) {
-        File collection = new File(dbName + File.separator + name);
+        File collection = new File(configurationManager.getDBRootFolder() + File.separator + dbName + File.separator + name);
         if (collection.exists()) {
             Arrays.asList(collection.listFiles()).stream().forEach(file -> file.delete());
         }

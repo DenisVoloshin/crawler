@@ -3,6 +3,7 @@ package com.analyzary.crawler.executor;
 import com.analyzary.crawler.analyse.HTMLPageAnalyser;
 import com.analyzary.crawler.cache.CrawlerCache;
 import com.analyzary.crawler.monitor.CrawlerMonitor;
+import com.analyzary.crawler.storage.CrawlerDAO;
 import com.analyzary.crawler.storage.HtmlPageMetaData;
 import com.analyzary.crawler.net.Connector;
 import com.analyzary.crawler.net.OkHttpConnector;
@@ -21,20 +22,18 @@ import java.util.logging.Logger;
 
 public class CrawlerWorker implements Runnable {
 
-
     private static Logger logger = Logger.getLogger(CrawlerWorker.class.getName());
-
-    private static boolean completed = false;
     private Connector connector;
     private Queue<QueueElement> queue;
     private String url;
     private HTMLPageAnalyser htmlPageAnalyser;
+    private CrawlerDAO crawlerDAO;
     private CrawlerCache<String, HtmlPageMetaData> crawlerCache;
     private int depth;
     private int maxDepth;
 
     public CrawlerWorker(Connector connector, Queue<QueueElement> queue, String url, int depth, int maxDepth,
-                         HTMLPageAnalyser htmlPageAnalyser, CrawlerCache crawlerCache) {
+                         HTMLPageAnalyser htmlPageAnalyser, CrawlerCache crawlerCache, CrawlerDAO crawlerDAO) {
         this.connector = connector;
         this.queue = queue;
         this.url = url;
@@ -42,6 +41,7 @@ public class CrawlerWorker implements Runnable {
         this.maxDepth = maxDepth;
         this.htmlPageAnalyser = htmlPageAnalyser;
         this.crawlerCache = crawlerCache;
+        this.crawlerDAO = crawlerDAO;
     }
 
     @Override
@@ -74,6 +74,7 @@ public class CrawlerWorker implements Runnable {
                     countDownLatch.countDown();
                     HtmlPageMetaData htmlPageMetaData = new HtmlPageMetaData(url, depth, "", 500, Collections.emptyList());
                     crawlerCache.put(url, htmlPageMetaData);
+
                     CrawlerMonitor.getInstance().incrementProcessedPagesWithError();
                     logger.severe(url + " " + e.getMessage());
                 }
@@ -117,6 +118,7 @@ public class CrawlerWorker implements Runnable {
 
                             HtmlPageMetaData htmlPageMetaData = new HtmlPageMetaData(url, depth, lastModificationDate, code, internalUrls);
                             htmlPageMetaData.setData(data);
+                            crawlerDAO.insertHtmlPageMetaData(url, htmlPageMetaData);
                             crawlerCache.put(url, htmlPageMetaData);
 
                         } else {
