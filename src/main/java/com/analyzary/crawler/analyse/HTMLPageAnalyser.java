@@ -4,8 +4,10 @@ import com.analyzary.crawler.dom.LinkElement;
 import com.analyzary.crawler.parser.HTMLPageParser;
 import com.analyzary.crawler.storage.HtmlPageMetaData;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.List;
@@ -28,9 +30,10 @@ public class HTMLPageAnalyser {
             if (domainName != null) {
                 row.append(url + "\t");
                 row.append(element.getDepth() + "\t");
-                long sameDamainLink = element.getLinks().stream().parallel().filter(link -> link.contains(domainName)).count();
+                long sameDomainLink = element.getLinks().stream().parallel().filter(link ->
+                        getDomainName(link).contains(domainName)).count();
                 row.append((element.getLinks().size() == 0 ? 0 :
-                        roundTo((double) sameDamainLink / (double) (element.getLinks().size()), 2)) + "\n");
+                        roundTo((double) sameDomainLink / (double) (element.getLinks().size()), 2)) + "\n");
                 ;
                 report.append(row);
             }
@@ -39,17 +42,34 @@ public class HTMLPageAnalyser {
     }
 
     public static String getDomainName(String url) {
+
+        String encoderURL = urlEncoder(url);
+        if (encoderURL == null) {
+            return "N/A";
+        }
         URI uri;
         try {
-            uri = new URI(url);
+            uri = new URI(urlEncoder(url));
         } catch (URISyntaxException e) {
-            return null;
+            return "N/A";
         }
         String domain = uri.getHost();
-        return domain.startsWith("www.") ? domain.substring(4) : domain;
+        return domain == null ? "N/A" : (domain.startsWith("www.") ? domain.substring(4) : domain);
     }
 
+
+    public static String urlEncoder(String url) {
+        try {
+            return java.net.URLDecoder.decode(url, StandardCharsets.UTF_8.name());
+        } catch (UnsupportedEncodingException e) {
+            // not going to happen - value came from JDK's own StandardCharsets
+        }
+        return null;
+
+    }
+
+
     private static double roundTo(double value, int places) {
-        return ((int)(value * Math.pow(10, places)) / Math.pow(10, places));
+        return ((int) (value * Math.pow(10, places)) / Math.pow(10, places));
     }
 }

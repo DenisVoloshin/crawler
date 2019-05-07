@@ -22,8 +22,6 @@ public class CrawlerApplication {
 
 
 
-
-
     public static void main(String[] args) {
 
         // parse app input arguments
