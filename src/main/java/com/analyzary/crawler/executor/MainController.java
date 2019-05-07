@@ -64,7 +64,7 @@ public class MainController {
                 .collect(toList());
         queueListeners.stream().forEach(queueListener -> queueListenersExecutor.submit(queueListener));
 
-        workersExecutor.submit(createWorker(url, 0));
+        workersExecutor.submit(createWorker(url, 1));
 
         try {
             workersExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
@@ -114,7 +114,7 @@ public class MainController {
                 CrawlerMonitor.getInstance().setActiveCrawlerWorkers(workersExecutor.getActiveCount());
                 CrawlerMonitor.getInstance().setWaitingCrawlerWorkers(workersExecutor.getQueue().size());
 
-                if (queueElement.getDepth() < configurationManager.getCrawlingDepth() && queueElement.getUrl() != null) {
+                if (queueElement.getDepth() < (configurationManager.getCrawlingDepth() + 1) && queueElement.getUrl() != null) {
                     //if (crawlerWorkersQueue.getSize() % 20 == 0) {
                     logger.fine("queueElement.getDepth()  [" + queueElement.getDepth() + "] queue size: "
                             + crawlerWorkersQueue.getSize() + " active threads:" + workersExecutor.getActiveCount() + " " +

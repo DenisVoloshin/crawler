@@ -24,7 +24,7 @@ public class CrawlerWorker implements Runnable {
 
     private static Logger logger = Logger.getLogger(CrawlerWorker.class.getName());
 
-    private static boolean completed = true;
+    private static boolean completed = false;
     private Connector connector;
     private Queue<QueueElement> queue;
     private String url;
@@ -95,7 +95,7 @@ public class CrawlerWorker implements Runnable {
                     if (code == OkHttpConnector.NOT_MODIFIED_304) {
                         //logger.info("Page  [" + url + "] loaded from cache");
 
-                        if ((depth + 1) < maxDepth) {
+                        if (depth < maxDepth) {
                             htmlPageMetaData.getLinks().stream().forEach(url ->
                                     queue.push(new QueueElement(url, depth + 1)));
                         }
@@ -104,7 +104,7 @@ public class CrawlerWorker implements Runnable {
 
                             List<String> internalUrls = htmlPageAnalyser.analysePage(data, url);
 
-                            if ((depth + 1) < maxDepth) {
+                            if (depth < maxDepth) {
                                 internalUrls.stream().forEach(url ->
                                         queue.push(new QueueElement(url, depth + 1)));
                             }
