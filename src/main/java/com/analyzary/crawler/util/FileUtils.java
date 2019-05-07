@@ -16,7 +16,7 @@ public class FileUtils {
         try {
             messageDigest = MessageDigest.getInstance("MD5");
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+           // TODO
         }
     }
 

@@ -2,15 +2,13 @@ package com.analyzary.crawler;
 
 import com.analyzary.crawler.config.AppConfig;
 import com.analyzary.crawler.config.ConfigurationManager;
-import com.analyzary.crawler.monitor.CrawlerMonitor;
 
-import java.io.*;
+import java.io.File;
+import java.net.MalformedURLException;
 import java.nio.file.Paths;
-import java.rmi.server.ExportException;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.IntStream;
 
 public class CrawlerApplication {
 
@@ -19,7 +17,6 @@ public class CrawlerApplication {
             "usage: com.analyzary.crawler.CrawlerApplication \n" +
             " -r,--root <arg>    URL of the root page \n" +
             " -d,--depth <arg>   depth limit";
-
 
 
     public static void main(String[] args) {
@@ -34,13 +31,12 @@ public class CrawlerApplication {
         List<String> argumentsAsList = Arrays.asList(args);
         String rootUrl = readArgument(argumentsAsList, "-r", "--root");
         String depth = readArgument(argumentsAsList, "-d", "--depth");
-        if (rootUrl == null || depth == null) {
+        if (rootUrl == null || depth == null || !isValidUrl(rootUrl)) {
             System.out.println(usage);
             System.exit(0);
         }
 
         // parse --depth should be int
-
         int depthAsInt = -1;
 
         try {
@@ -52,7 +48,7 @@ public class CrawlerApplication {
 
         AppConfig appConfig = new AppConfig();
         appConfig.setDepth(depthAsInt);
-        appConfig.setDbRootFolder(Paths.get("../").toAbsolutePath().toString() + File.separator + "crawler_cache");
+        appConfig.setDbRootFolder(Paths.get("../").toAbsolutePath().toString() + File.separator + "CrawlerDB");
         appConfig.setRootUrl(rootUrl);
 
         ConfigurationManager configurationManager = ConfigurationManager.getInstance();
@@ -61,6 +57,27 @@ public class CrawlerApplication {
         crawler.start();
     }
 
+
+    private static boolean isValidDepth(String depth) {
+        int depthInt;
+        try {
+            depthInt = Integer.parseInt(depth);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+
+        return depthInt > 0 ? true : false;
+
+    }
+
+    private static boolean isValidUrl(String urlAsString) {
+        try {
+            new java.net.URL(urlAsString);
+        } catch (MalformedURLException e) {
+            return false;
+        }
+        return true;
+    }
 
     private static String readArgument(List<String> args, String shortName, String fullName) {
         Iterator<String> arguments = args.iterator();
