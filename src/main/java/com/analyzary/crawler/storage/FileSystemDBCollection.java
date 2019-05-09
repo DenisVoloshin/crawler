@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 public class FileSystemDBCollection implements CrawlerDBCollection {
 
@@ -24,17 +25,19 @@ public class FileSystemDBCollection implements CrawlerDBCollection {
     }
 
 
-
     @Override
     @CheckForNull
     public String getElementById(String id) {
         File collection = new File(configurationManager.getDBRootFolder() + File.separator
                 + dbName + File.separator + collectionName);
         if (collection.exists()) {
-            File element = Arrays.asList(collection.listFiles()).stream().parallel().filter(file -> file.getName().equals(id)).findFirst().get();
-            if (element != null) {
+
+            Optional<File> element = Arrays.asList(collection.listFiles()).stream().parallel().filter(file -> file.getName().equals(id)).findFirst();
+
+            if (element.isPresent()) {
+                File file = element.get();
                 try {
-                    FileUtils.readFile(element.getAbsolutePath());
+                   return FileUtils.readFile(file.getAbsolutePath());
                 } catch (IOException e) {
                     return null;
                 }
@@ -48,7 +51,7 @@ public class FileSystemDBCollection implements CrawlerDBCollection {
         ArrayList<String> elements = new ArrayList<>();
         File collection = new File(configurationManager.getDBRootFolder() + File.separator
                 + dbName + File.separator + collectionName);
-        Arrays.asList(collection.listFiles()).stream().parallel().forEach(file -> {
+        Arrays.asList(collection.listFiles()).stream().forEach(file -> {
             try {
                 elements.add(FileUtils.readFile(file.getAbsolutePath()));
             } catch (IOException e) {

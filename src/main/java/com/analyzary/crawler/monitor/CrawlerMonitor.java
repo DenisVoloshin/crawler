@@ -14,6 +14,9 @@ public class CrawlerMonitor {
     private volatile int successfullyProcessedPages;
     private volatile int processedPagesWithError;
     private volatile long elapsedTime;
+    private volatile long notModifiedPages;
+    private volatile long skippedPages;
+    private volatile long reDownloadedPages;
 
 
     private final ScheduledExecutorService scheduler =
@@ -57,6 +60,9 @@ public class CrawlerMonitor {
         monitorState.append("Waiting Crawler Workers:\t" + waitingCrawlerWorkers + "\n");
         monitorState.append("Total Processed Pages:\t" + totalProcessedPages + "\n");
         monitorState.append("Successfully Processed Pages:\t" + successfullyProcessedPages + "\n");
+        monitorState.append("Not Modified Pages:\t" + notModifiedPages + "\n");
+        monitorState.append("Re downloaded Pages:\t" + reDownloadedPages + "\n");
+        monitorState.append("Skipped Pages:\t" + skippedPages + "\n");
         monitorState.append("Processed Pages with Error:\t" + processedPagesWithError + "\n");
         monitorState.append("Elapsed Time:\t" + (System.currentTimeMillis() - elapsedTime) + "\n");
         monitorState.append("\n");
@@ -85,5 +91,14 @@ public class CrawlerMonitor {
 
     public void incrementProcessedPagesWithError() {
         this.processedPagesWithError++;
+    }
+    public void incrementNoModifiedPage() {
+        this.notModifiedPages++;
+    }
+    public void incrementSkippedPages() {
+        this.skippedPages++;
+    }
+    public void incrementReDownloadedPages() {
+        this.reDownloadedPages++;
     }
 }

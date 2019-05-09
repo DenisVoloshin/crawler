@@ -20,7 +20,7 @@ public class FileSystemCrawlerDB implements CrawlerDB {
         this.configurationManager = configurationManager;
         File dbNameAsFile = new File(configurationManager.getDBRootFolder() + File.separator + dbName);
         if (!dbNameAsFile.exists()) {
-            dbNameAsFile.mkdir();
+            dbNameAsFile.mkdirs();
         } else {
             Arrays.asList(dbNameAsFile.listFiles()).stream().parallel().forEach(file -> {
                 collections.put(file.getName(), new FileSystemDBCollection(dbName, file.getName(), configurationManager));

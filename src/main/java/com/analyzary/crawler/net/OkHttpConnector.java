@@ -18,10 +18,10 @@ public class OkHttpConnector implements Connector {
                 .followRedirects(true)
                 .followSslRedirects(true)
                 .cache(null)
-                .connectionPool(new ConnectionPool(100, 10, TimeUnit.SECONDS))
-                .connectTimeout(2, TimeUnit.SECONDS)
+                .connectionPool(new ConnectionPool(50, 10, TimeUnit.SECONDS))
+                .connectTimeout(10, TimeUnit.SECONDS)
                 .writeTimeout(0, TimeUnit.SECONDS)
-                .readTimeout(5, TimeUnit.SECONDS).build();
+                .readTimeout(10, TimeUnit.SECONDS).build();
     }
 
 

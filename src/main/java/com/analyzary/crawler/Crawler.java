@@ -1,20 +1,24 @@
 package com.analyzary.crawler;
 
 import com.analyzary.crawler.analyse.HTMLPageAnalyser;
-import com.analyzary.crawler.cache.PersistentCache;
+import com.analyzary.crawler.analyse.HtmlPageRatioReporter;
 import com.analyzary.crawler.config.ConfigurationManager;
 import com.analyzary.crawler.executor.MainController;
 import com.analyzary.crawler.monitor.CrawlerMonitor;
 import com.analyzary.crawler.net.OkHttpConnector;
 import com.analyzary.crawler.queue.CrawlerWorkersQueue;
 import com.analyzary.crawler.storage.CrawlerDAO;
-
+import com.analyzary.crawler.model.CrawlerState;
 import java.util.logging.Logger;
 
+
+/**
+ *  The main class responsible for initialization
+ *  all Crawler components and determines the running mode
+ */
 public class Crawler {
 
     Logger logger = Logger.getLogger(Crawler.class.getName());
-
     ConfigurationManager configurationManager;
 
     public Crawler(ConfigurationManager configurationManager) {
@@ -27,26 +31,33 @@ public class Crawler {
         logger.info(configurationManager.toString());
 
         CrawlerWorkersQueue crawlerQueue = new CrawlerWorkersQueue();
-        PersistentCache crawlerCache = new PersistentCache(configurationManager);
         OkHttpConnector connector = new OkHttpConnector();
         HTMLPageAnalyser htmlPageAnalyser = new HTMLPageAnalyser();
+        CrawlerDAO.getInstance().connect();
+
+        // determine if the crawler previous launch is no completed
+        // if yes the crawler will be running in the recovery mode.
+        CrawlerState currentState =
+                new CrawlerStateManager(CrawlerDAO.getInstance(), configurationManager).getNextState();
+
 
         MainController mainController = new MainController(
                 configurationManager,
                 crawlerQueue,
                 connector,
                 configurationManager.getRootPoint(),
+                currentState,
                 htmlPageAnalyser,
-                crawlerCache,
                 CrawlerDAO.getInstance());
         mainController.execute();
-        logger.info("Crawler stopped");
-        System.out.println(HTMLPageAnalyser.createReport(crawlerCache.getMetaData()));
-        CrawlerMonitor.getInstance().stop();
+        System.out.println(HtmlPageRatioReporter.createReport(CrawlerDAO.getInstance().getAllHtmlPageMetaDataElements()));
+        stop();
         System.exit(0);
     }
 
     public void stop() {
+        CrawlerDAO.getInstance().setCrawlerState(new CrawlerState(configurationManager.getCrawlingId(), CrawlerState.State.COMPLETE));
         logger.info("Crawler stopped");
+        CrawlerMonitor.getInstance().stop();
     }
 }

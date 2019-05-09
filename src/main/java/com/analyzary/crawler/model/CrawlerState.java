@@ -1,4 +1,4 @@
-package com.analyzary.crawler.storage;
+package com.analyzary.crawler.model;
 
 import com.google.gson.Gson;
 
@@ -7,6 +7,11 @@ public class CrawlerState {
     private State state;
     // There is nothing in the GSON instance that makes it related to a specific instance.
     private static Gson jsonManager = new Gson();
+
+    public CrawlerState(String id, State state) {
+        this.id = id;
+        this.state = state;
+    }
 
     public String getId() {
         return id;
@@ -26,7 +31,8 @@ public class CrawlerState {
 
     public enum State {
         RUNNING,
-        COMPLETE
+        COMPLETE,
+        RECOVERY
     }
 
     public String toJSON() {

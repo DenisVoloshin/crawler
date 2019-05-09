@@ -1,14 +1,16 @@
-package com.analyzary.crawler.storage;
+package com.analyzary.crawler.model;
 
 import com.google.gson.Gson;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class HtmlPageMetaData {
 
     private String lastModificationDate;
-    private int depth;
+    private Integer[] depths;
     @Nullable
     private byte[] data;
     private List<String> links;
@@ -24,7 +26,7 @@ public class HtmlPageMetaData {
         this.lastModificationDate = htmlPageMetaDataJSON.lastModificationDate;
         this.links = htmlPageMetaDataJSON.links;
         this.url = htmlPageMetaDataJSON.url;
-        this.depth = htmlPageMetaDataJSON.depth;
+        this.depths = htmlPageMetaDataJSON.depths;
         this.responseCode = htmlPageMetaDataJSON.responseCode;
     }
 
@@ -33,7 +35,8 @@ public class HtmlPageMetaData {
         this.links = links;
         this.url = url;
         this.responseCode = responseCode;
-        this.depth = depth;
+        this.depths = new Integer[1];
+        this.depths[0] = depth;
     }
 
     public String getUrl() {
@@ -61,12 +64,22 @@ public class HtmlPageMetaData {
         this.lastModificationDate = lastModificationDate;
     }
 
-    public int getDepth() {
-        return depth;
+    public Integer[] getDepths() {
+        return depths;
     }
 
-    public void setDepth(int depth) {
-        this.depth = depth;
+    public void setDepths(Integer[] depths) {
+        this.depths = depths;
+    }
+
+    public void addDepth(int depth) {
+        synchronized (this.depths) {
+            ArrayList<Integer> depthsList = new ArrayList(Arrays.asList(this.depths));
+            if (!depthsList.contains(depth)) {
+                depthsList.add(depth);
+            }
+            this.depths = depthsList.toArray(new Integer[0]);
+        }
     }
 
     public List<String> getLinks() {
@@ -79,23 +92,23 @@ public class HtmlPageMetaData {
 
     public String toJSON() {
         Gson gson = new Gson();
-        return gson.toJson(new HtmlPageMetaDataJSON(lastModificationDate, depth, responseCode, links, url));
+        return gson.toJson(new HtmlPageMetaDataJSON(lastModificationDate, depths, responseCode, links, url));
     }
 
     public String fromJSON(String json) {
-        return jsonManager.toJson(new HtmlPageMetaDataJSON(lastModificationDate, depth, responseCode, links, url));
+        return jsonManager.toJson(new HtmlPageMetaDataJSON(lastModificationDate, depths, responseCode, links, url));
     }
 
     private static class HtmlPageMetaDataJSON {
         private String lastModificationDate;
-        private int depth;
+        private Integer[] depths;
         private List<String> links;
         private String url;
         private int responseCode;
 
-        public HtmlPageMetaDataJSON(String lastModificationDate, int depth, int responseCode, List<String> links, String url) {
+        public HtmlPageMetaDataJSON(String lastModificationDate, Integer[] depths, int responseCode, List<String> links, String url) {
             this.lastModificationDate = lastModificationDate;
-            this.depth = depth;
+            this.depths = depths;
             this.links = links;
             this.url = url;
             this.responseCode = responseCode;
@@ -117,12 +130,12 @@ public class HtmlPageMetaData {
             this.responseCode = responseCode;
         }
 
-        public int getDepth() {
-            return depth;
+        public Integer[] getDepth() {
+            return depths;
         }
 
-        public void setDepth(int depth) {
-            this.depth = depth;
+        public void setDepth(Integer[] depth) {
+            this.depths = depth;
         }
 
         public List<String> getLinks() {

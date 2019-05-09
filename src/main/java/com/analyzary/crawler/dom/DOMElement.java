@@ -2,8 +2,14 @@ package com.analyzary.crawler.dom;
 
 import java.util.Map;
 
+
+/**
+ * Interface for base html page element
+ */
 public interface DOMElement {
-    public String tagName();
-    public String tagInner();
-    public Map<String,String> getAttrs();
+    String tagName();
+
+    String tagInner();
+
+    Map<String, String> getAttrs();
 }

@@ -8,8 +8,8 @@ import com.analyzary.crawler.net.Connector;
 import com.analyzary.crawler.queue.CrawlerWorkersQueue;
 import com.analyzary.crawler.queue.QueueElement;
 import com.analyzary.crawler.storage.CrawlerDAO;
+import com.analyzary.crawler.model.CrawlerState;
 
-import java.lang.management.MonitorInfo;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -37,14 +37,15 @@ public class MainController {
     private CrawlerCache crawlerCache;
     private ConfigurationManager configurationManager;
     private CrawlerDAO crawlerDAO;
+    private CrawlerState previousState;
 
 
     public MainController(ConfigurationManager configurationManager,
                           CrawlerWorkersQueue crawlerWorkersQueue,
                           Connector connector,
                           String url,
+                          CrawlerState previousState,
                           HTMLPageAnalyser htmlPageAnalyser,
-                          CrawlerCache crawlerCache,
                           CrawlerDAO crawlerDAO) {
 
 
@@ -53,8 +54,8 @@ public class MainController {
         this.crawlerWorkersQueue = crawlerWorkersQueue;
         this.connector = connector;
         this.url = url;
+        this.previousState = previousState;
         this.htmlPageAnalyser = htmlPageAnalyser;
-        this.crawlerCache = crawlerCache;
         this.crawlerDAO = crawlerDAO;
 
         workersExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(workersExecutorSize);
@@ -87,14 +88,14 @@ public class MainController {
         } catch (InterruptedException e) {
         }
 
-        crawlerCache.stop();
+        crawlerDAO.close();
         connector.close();
     }
 
 
     private CrawlerWorker createWorker(String url, int depth) {
         return new CrawlerWorker(connector, crawlerWorkersQueue, url, depth,
-                configurationManager.getCrawlingDepth(), htmlPageAnalyser, crawlerCache, crawlerDAO);
+                configurationManager.getCrawlingDepth(), htmlPageAnalyser, previousState, crawlerDAO);
     }
 
     private class QueueListener implements Runnable {

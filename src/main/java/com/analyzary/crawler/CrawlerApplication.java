@@ -58,18 +58,6 @@ public class CrawlerApplication {
     }
 
 
-    private static boolean isValidDepth(String depth) {
-        int depthInt;
-        try {
-            depthInt = Integer.parseInt(depth);
-        } catch (NumberFormatException e) {
-            return false;
-        }
-
-        return depthInt > 0 ? true : false;
-
-    }
-
     private static boolean isValidUrl(String urlAsString) {
         try {
             new java.net.URL(urlAsString);
