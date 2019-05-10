@@ -5,6 +5,9 @@ import com.analyzary.crawler.config.ConfigurationManager;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Concrete {@link com.analyzary.crawler.storage.CrawlerDBClient} implementation base on locale file system.
+ */
 public class FileSystemCrawlerDBClient implements CrawlerDBClient {
 
     ConfigurationManager configurationManager;

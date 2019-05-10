@@ -5,6 +5,10 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+
+/**
+ * The class is used for internal purposes to aggregate the runtime metrics and show the on the fly.
+ */
 public class CrawlerMonitor {
 
     private volatile int queueSize;
@@ -33,7 +37,6 @@ public class CrawlerMonitor {
     }
 
     private void printMonitorStatus() {
-        System.out.print("\033[H\033[2J");
         System.out.println(getFormattedMonitorStatusAsString());
     }
 
@@ -92,7 +95,7 @@ public class CrawlerMonitor {
     public void incrementProcessedPagesWithError() {
         this.processedPagesWithError++;
     }
-    public void incrementNoModifiedPage() {
+    public void incrementNoModifiedPages() {
         this.notModifiedPages++;
     }
     public void incrementSkippedPages() {

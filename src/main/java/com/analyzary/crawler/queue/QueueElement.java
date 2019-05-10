@@ -2,6 +2,10 @@ package com.analyzary.crawler.queue;
 
 import javax.annotation.Nullable;
 
+
+/**
+ * Defines {@link com.analyzary.crawler.queue.CrawlerWorkersQueue} message model
+ */
 public class QueueElement {
     @Nullable
     private String url;

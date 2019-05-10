@@ -4,6 +4,7 @@ import com.analyzary.crawler.net.RequestCallback;
 
 import java.util.Map;
 
+
 public class BaseCrawlerRequest implements CrawlerRequest {
 
     private Method method;

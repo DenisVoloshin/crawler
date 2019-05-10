@@ -7,6 +7,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Represents html meda-data model,
+ * the element has JSON format which is easy to store in document based DB like MonogoDB
+ */
 public class HtmlPageMetaData {
 
     private String lastModificationDate;
@@ -37,6 +41,10 @@ public class HtmlPageMetaData {
         this.responseCode = responseCode;
         this.depths = new Integer[1];
         this.depths[0] = depth;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public String getUrl() {

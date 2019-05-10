@@ -6,6 +6,10 @@ import java.util.stream.Collectors;
 import org.jsoup.nodes.Attribute;
 import org.jsoup.nodes.Element;
 
+
+/**
+ *  Represents  HTML DOM link element
+ */
 public class LinkElement implements DOMElement {
     private Element element;
 

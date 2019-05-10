@@ -2,15 +2,28 @@ package com.analyzary.crawler.model;
 
 import com.google.gson.Gson;
 
+/**
+ * Defines a Crawler state
+ */
 public class CrawlerState {
     private String id;
     private State state;
+    private int depth;
     // There is nothing in the GSON instance that makes it related to a specific instance.
     private static Gson jsonManager = new Gson();
 
-    public CrawlerState(String id, State state) {
+    public CrawlerState(String id, State state,int depth) {
         this.id = id;
         this.state = state;
+        this.depth = depth;
+    }
+
+    public int getDepth() {
+        return depth;
+    }
+
+    public void setDepth(int depth) {
+        this.depth = depth;
     }
 
     public String getId() {
@@ -32,7 +45,9 @@ public class CrawlerState {
     public enum State {
         RUNNING,
         COMPLETE,
-        RECOVERY
+        RECOVERY,
+        UPDATE
+
     }
 
     public String toJSON() {

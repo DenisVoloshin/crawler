@@ -1,14 +1,13 @@
 package com.analyzary.crawler.executor;
 
 import com.analyzary.crawler.analyse.HTMLPageAnalyser;
-import com.analyzary.crawler.cache.CrawlerCache;
 import com.analyzary.crawler.config.ConfigurationManager;
+import com.analyzary.crawler.model.CrawlerState;
 import com.analyzary.crawler.monitor.CrawlerMonitor;
 import com.analyzary.crawler.net.Connector;
 import com.analyzary.crawler.queue.CrawlerWorkersQueue;
 import com.analyzary.crawler.queue.QueueElement;
 import com.analyzary.crawler.storage.CrawlerDAO;
-import com.analyzary.crawler.model.CrawlerState;
 
 import java.util.Collections;
 import java.util.List;
@@ -19,6 +18,17 @@ import java.util.logging.Logger;
 
 import static java.util.stream.Collectors.toList;
 
+
+/**
+ * The Crawler coordinator, initializes all Crawler components
+ * 1. Queue holds links which should be processed
+ * 2. Queue listeners, poll from queue available link for processing,
+ *    creates a new Crawler worker {@link com.analyzary.crawler.executor.CrawlerWorker}
+ *    and submits it into ThreadPoolExecutor, the ThreadPoolExecutor has a pool with predefined threads size.
+ * 3. Each Crawler processes the given link and feeds the queue with all link from the next level.
+ * 4. When the Queue is empty and ThreadPoolExecutor has no active or waiting worker
+ *    the Crawler coordinator stops the process.
+ */
 public class MainController {
 
     private static Logger logger = Logger.getLogger(MainController.class.getName());
@@ -26,7 +36,7 @@ public class MainController {
     private ThreadPoolExecutor queueListenersExecutor;
 
     private int workersExecutorSize = 200;
-    private int queueListenersExecutorSize = 2;
+    private int queueListenersExecutorSize = 1;
 
     private List<QueueListener> queueListeners;
     private CrawlerWorkersQueue crawlerWorkersQueue;
@@ -34,7 +44,6 @@ public class MainController {
     private Connector connector;
     private String url;
     private HTMLPageAnalyser htmlPageAnalyser;
-    private CrawlerCache crawlerCache;
     private ConfigurationManager configurationManager;
     private CrawlerDAO crawlerDAO;
     private CrawlerState previousState;

@@ -20,6 +20,13 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+
+/**
+ * The major class which responsible to process a given link and queue feeding with links extracted from the given link
+ * If the next level of the given link  the max level,
+ * the worker process it (skipping  pushing the next level links into the queue) and terminates.
+ * The worker downloads the http link synchronously.
+ */
 public class CrawlerWorker implements Runnable {
 
     private static Logger logger = Logger.getLogger(CrawlerWorker.class.getName());
@@ -36,19 +43,20 @@ public class CrawlerWorker implements Runnable {
                          HTMLPageAnalyser htmlPageAnalyser, CrawlerState previousState, CrawlerDAO crawlerDAO) {
         this.connector = connector;
         this.queue = queue;
-        this.url = url;
+        this.url = normalizeUrl(url);
         this.currentState = previousState;
         this.depth = depth;
         this.maxDepth = maxDepth;
         this.htmlPageAnalyser = htmlPageAnalyser;
         this.crawlerDAO = crawlerDAO;
+    }
 
+    private String normalizeUrl(String url) {
+        return url.trim().endsWith("/") ? url.substring(0, url.length() - 1) : url;
     }
 
     @Override
     public void run() {
-
-
         CrawlerMonitor.getInstance().incrementTotalProcessedPages();
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
@@ -56,11 +64,10 @@ public class CrawlerWorker implements Runnable {
 
         String modificationDate = htmlPageMetaData == null ? "" : htmlPageMetaData.getLastModificationDate();
 
-
         if (htmlPageMetaData != null) {
             // the page already processed before
             if (htmlPageMetaData.getResponseCode() == Connector.OK_200 || htmlPageMetaData.getResponseCode() == Connector.NOT_MODIFIED_304) {
-                if (currentState.getState() != CrawlerState.State.COMPLETE) {
+                if (currentState.getState() != CrawlerState.State.UPDATE) {
                     CrawlerMonitor.getInstance().incrementSuccessfullyProcessedPages();
                     CrawlerMonitor.getInstance().incrementSkippedPages();
                     htmlPageMetaData.addDepth(depth);
@@ -73,15 +80,18 @@ public class CrawlerWorker implements Runnable {
                         }
                     }
                 }
-            } else if (depth != 1) {
-                CrawlerMonitor.getInstance().incrementSkippedPages();
-                queue.push(new QueueElement(null, 0));
-                return;
+            } else if (htmlPageMetaData.getResponseCode() < 400 || htmlPageMetaData.getResponseCode() > 500) {
+                // the page previously had error code (different from 404) try to download it again
+                htmlPageMetaData = null;
             }
         }
 
+
+        final HtmlPageMetaData htmlPageMetaData4CallBack = htmlPageMetaData;
         // the page never was processed or has to be updated.
-        if (currentState.getState() == CrawlerState.State.COMPLETE || htmlPageMetaData == null) {
+        if (currentState.getState() == CrawlerState.State.UPDATE
+                || currentState.getState() == CrawlerState.State.RUNNING ||
+                htmlPageMetaData4CallBack == null) {
 
             final CrawlerRequest.Method method = modificationDate.isEmpty() ? CrawlerRequest.Method.GET :
                     CrawlerRequest.Method.HEAD;
@@ -112,9 +122,9 @@ public class CrawlerWorker implements Runnable {
                     CrawlerMonitor.getInstance().incrementSuccessfullyProcessedPages();
 
                     if (code == OkHttpConnector.NOT_MODIFIED_304) {
-                        CrawlerMonitor.getInstance().incrementNoModifiedPage();
+                        CrawlerMonitor.getInstance().incrementNoModifiedPages();
                         if (depth < maxDepth) {
-                            htmlPageMetaData.getLinks().stream().forEach(url ->
+                            htmlPageMetaData4CallBack.getLinks().stream().forEach(url ->
                                     queue.push(new QueueElement(url, depth + 1)));
                         }
                     } else {
@@ -132,19 +142,19 @@ public class CrawlerWorker implements Runnable {
                             }
 
 
-                            if (htmlPageMetaData == null) {
+                            if (htmlPageMetaData4CallBack == null) {
                                 HtmlPageMetaData newHtmlPageMetaData = new HtmlPageMetaData(url, depth, lastModificationDate, code, internalUrls);
                                 newHtmlPageMetaData.setData(data);
                                 crawlerDAO.insertHtmlPageMetaData(url, newHtmlPageMetaData);
                             } else {
-                                if(data.length>0 && currentState.getState() == CrawlerState.State.COMPLETE){
+                                if (data.length > 0 && currentState.getState() == CrawlerState.State.COMPLETE) {
                                     CrawlerMonitor.getInstance().incrementReDownloadedPages();
                                 }
-                                htmlPageMetaData.setData(data);
-                                htmlPageMetaData.setLinks(internalUrls);
-                                htmlPageMetaData.setLastModificationDate(lastModificationDate);
-                                htmlPageMetaData.addDepth(depth);
-                                crawlerDAO.insertHtmlPageMetaData(url, htmlPageMetaData);
+                                htmlPageMetaData4CallBack.setData(data);
+                                htmlPageMetaData4CallBack.setLinks(internalUrls);
+                                htmlPageMetaData4CallBack.setLastModificationDate(lastModificationDate);
+                                htmlPageMetaData4CallBack.addDepth(depth);
+                                crawlerDAO.insertHtmlPageMetaData(url, htmlPageMetaData4CallBack);
                             }
 
                         } else {
@@ -158,12 +168,13 @@ public class CrawlerWorker implements Runnable {
             connector.executeRequest(request);
 
             try {
-                countDownLatch.await(20, TimeUnit.SECONDS);
+                if(!countDownLatch.await(20, TimeUnit.SECONDS)){
+                    CrawlerMonitor.getInstance().incrementProcessedPagesWithError();
+                }
             } catch (InterruptedException e) {
                 logger.severe(e.getMessage());
             }
         }
-
         queue.push(new QueueElement(null, 0));
         synchronized (queue) {
             queue.notifyAll();

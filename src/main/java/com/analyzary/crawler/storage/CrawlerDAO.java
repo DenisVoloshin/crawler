@@ -13,6 +13,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+
+/**
+ * Represents the Crawler data access object facade.
+ */
 public class CrawlerDAO {
 
     private static final String DB_NAME = "CRAWLER_DB";

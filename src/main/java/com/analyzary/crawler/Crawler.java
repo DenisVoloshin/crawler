@@ -9,12 +9,16 @@ import com.analyzary.crawler.net.OkHttpConnector;
 import com.analyzary.crawler.queue.CrawlerWorkersQueue;
 import com.analyzary.crawler.storage.CrawlerDAO;
 import com.analyzary.crawler.model.CrawlerState;
+import com.analyzary.crawler.util.FileUtils;
+
+import java.io.IOException;
+import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
 
 /**
- *  The main class responsible for initialization
- *  all Crawler components and determines the running mode
+ * The main class responsible for initialization
+ * all Crawler components and determines the running mode
  */
 public class Crawler {
 
@@ -50,13 +54,21 @@ public class Crawler {
                 htmlPageAnalyser,
                 CrawlerDAO.getInstance());
         mainController.execute();
-        System.out.println(HtmlPageRatioReporter.createReport(CrawlerDAO.getInstance().getAllHtmlPageMetaDataElements()));
+        String report = HtmlPageRatioReporter.createReport(CrawlerDAO.getInstance().getAllHtmlPageMetaDataElements());
+        System.out.println(report);
+
+        try {
+            FileUtils.writeFile(report.getBytes(),"domain-ratio-report.tsv");
+        } catch (IOException e) {
+           //TODO
+        }
+
         stop();
         System.exit(0);
     }
 
     public void stop() {
-        CrawlerDAO.getInstance().setCrawlerState(new CrawlerState(configurationManager.getCrawlingId(), CrawlerState.State.COMPLETE));
+        CrawlerDAO.getInstance().setCrawlerState(new CrawlerState(configurationManager.getCrawlingId(), CrawlerState.State.COMPLETE, configurationManager.getCrawlingDepth()));
         logger.info("Crawler stopped");
         CrawlerMonitor.getInstance().stop();
     }

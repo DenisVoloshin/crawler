@@ -10,7 +10,7 @@ import java.util.Collection;
 
 
 /**
- *  Creates html ratio report according to the predefined format
+ * Creates html ratio report according to the predefined format (TSV)
  */
 public class HtmlPageRatioReporter {
 
@@ -36,6 +36,7 @@ public class HtmlPageRatioReporter {
         });
         return report.toString();
     }
+
 
     public static String getDomainName(String url) {
 

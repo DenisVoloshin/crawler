@@ -6,6 +6,10 @@ import com.analyzary.crawler.model.HtmlPageMetaData;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 
+
+/**
+ * In-memory cache implementation. Might be extended for scalable crawler implementation.
+ */
 public class InMemoryCache implements CrawlerCache<String, HtmlPageMetaData> {
 
     private ConcurrentHashMap<String, HtmlPageMetaData> cache;

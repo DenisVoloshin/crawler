@@ -7,6 +7,9 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Hashtable;
 
+/**
+ * Concrete {@link com.analyzary.crawler.storage.CrawlerDB} implementation base on locale file system.
+ */
 public class FileSystemCrawlerDB implements CrawlerDB {
 
     String dbName;

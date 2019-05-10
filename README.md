@@ -10,67 +10,63 @@ Let's see how easily and quickly you can build and run Web Crawler
 * [Design](#design)
 * [Sctructure](#modules)  
 * [Build](#build)
-* [Run Tests](#tests)
-* [Usage](#usage)
+* [Run](#run)
 * [JavaDoc](#javadoc)
 
 
 ## <a name="design"></a>Crawler Design Overview
    
- The Crawler browsing process behaves as a stateful process which is dictated by the following Finite-state machine.
+ The Crawler browsing process behaves as a stateful process which is 
+ dictated by the following Finite-state machine.
+ Each Crawler execution has to be completed if it does not happen, 
+ the next execution will be running in the Recovery Mode. 
+ 
+ ![](CrawlerStates.png)
+ 
+ 
  
 ## <a name="build"></a>Build Crawler
 
 ### Overview
 
- Airlock SDK could be build as a JAR file which later might be usage in any java based system 
+ Crawler could be build as a JAR file which later might be usage in any java based system 
 
 #### 1. Clone and build a jar file
 
-Clone the repository using git tool, develop branch has a latest code
-
-#### 2. Build configuration
-   - Set snapshot flag 
-   Open build.gradle and set ext.SNAPSHOT be true.
-  
-   - Set development build version
-   Open gradle.properties file and set *devBuildNumber* value. 
+Clone the repository using git tool, master branch has a latest code
    
-   
-#### 3. Run Build from CMD   
+#### 2. Run Build from CMD   
 
 ```bash
-$ ./gradlew build
+$ ./gradlew build 
 ```
 
-The artifact will be located in `/build/libs` folder
+The artifact crawler-app-<version>.jar will be located in `/build/libs` folder
 
-## <a name="tests"></a>Tests
+## <a name="usage"></a>Run
 
-#### 4. Run Tests
+#### 2. Run Crawler
 
 ### Overview
-
-
-  The tests are localed on the airlock-sdk-common, 
-  each platform has its own tests suite to run them.
-  To run test you can either use Intejii IDE or run gradle cmd command.
- 
-
+  The Crawler should be executed with two arguments in the following format
+  
 ```bash
-$ ./gradlew clean test
+  usage: com.analyzary.crawler.CrawlerApplication 
+ -r,--root <arg>    URL of the root page 
+ -d,--depth <arg>   depth limit
+```
+  
+### Sample
+  
+```bash
+$ java -jar /build/libs/crawler-app-1.0.0.jar -r https://www.lightricks.com -d 2 
 ```
 
-
-## <a name="model"></a>Mutli Airlock Product Model
-#### Motivation:
+The Crawler output file is named domain-ratio-report.tsv
 
 
-## <a name="usage"></a>Usage
-
- The usage section will be based on Airlock Rest API Client auto-generated through `swagger-gen` tool
- Demonstrates the initial step to get started with Airlock SDK for Java.  
+## <a name="javadoc"></a>Java Doc
  
- [Airlock SDK sample code](https://github.com/TheWeatherCompany/airlock-sdk-java/blob/develop/src/test/java/runner/TestDriver.java)
+ [Crawler Java doc](https://github.com/TheWeatherCompany/airlock-sdk-java/blob/develop/src/test/java/runner/TestDriver.java)
      
      

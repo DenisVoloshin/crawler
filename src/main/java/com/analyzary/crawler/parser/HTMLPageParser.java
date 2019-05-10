@@ -8,6 +8,11 @@ import org.jsoup.nodes.Document;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+
+/**
+ * Concrete implementation of {@link com.analyzary.crawler.parser.ElementExtractor}
+ * is based on https://jsoup.org/ third party
+ */
 public class HTMLPageParser implements ElementExtractor {
     private Document document;
     private Collection<? extends DOMElement> linkElements;
@@ -19,7 +24,6 @@ public class HTMLPageParser implements ElementExtractor {
                 .map(element -> new LinkElement(element))
                 .collect(Collectors.toList());
     }
-
 
     @Override
     public Collection<? extends DOMElement> getElements() {

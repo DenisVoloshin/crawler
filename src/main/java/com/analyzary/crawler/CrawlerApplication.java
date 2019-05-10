@@ -10,6 +10,11 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+
+/**
+ * The Crawler main class is in charge of parsing and validation the app arguments
+ * and starting Crawler process.
+ */
 public class CrawlerApplication {
 
     private static String usage = "Wrong or missing required argument: \n" +

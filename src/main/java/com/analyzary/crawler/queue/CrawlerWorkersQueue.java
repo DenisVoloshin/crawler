@@ -4,6 +4,10 @@ package com.analyzary.crawler.queue;
 import javax.annotation.CheckForNull;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+
+/**
+ * Concrete Crawler Queue in-memory implementation.
+ */
 public class CrawlerWorkersQueue implements Queue<QueueElement> {
 
     ConcurrentLinkedQueue<QueueElement> queue;

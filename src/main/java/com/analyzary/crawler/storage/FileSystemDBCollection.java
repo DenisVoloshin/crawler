@@ -11,6 +11,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+
+/**
+ * Concrete {@link com.analyzary.crawler.storage.CrawlerDBCollection} implementation base on locale file system.
+ */
 public class FileSystemDBCollection implements CrawlerDBCollection {
 
     private String collectionName;

@@ -1,5 +1,9 @@
 package com.analyzary.crawler.storage;
 
+
+/**
+ * Crawler data base object abstraction
+ */
 public interface CrawlerDB {
     void createCollection(String name);
 

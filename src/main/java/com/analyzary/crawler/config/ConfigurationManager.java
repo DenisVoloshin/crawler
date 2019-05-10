@@ -1,6 +1,9 @@
 package com.analyzary.crawler.config;
 
 
+/**
+ *  Represents Crawler configuration
+ */
 public class ConfigurationManager {
 
     private static String DEFAULT_UUID = "d626f506-715f-11e9-a923-1681be663d3e";

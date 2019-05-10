@@ -9,6 +9,11 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+
+/**
+ * Concrete implementation of {@ink com.analyzary.crawler.net.Connector} the class is based on
+ * https://github.com/square/okhttp/tree/master/okhttp/src/main/java/okhttp3 third party
+ */
 public class OkHttpConnector implements Connector {
 
     private static OkHttpClient client;
