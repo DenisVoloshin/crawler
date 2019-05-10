@@ -24,8 +24,9 @@ public class CrawlerStateManager {
         CrawlerState previousState = crawlerDAO.getCrawlerState(configurationManager.getCrawlingId());
         CrawlerState currentState;
         if (previousState == null ||
-                previousState != null && previousState.getDepth() != configurationManager.getCrawlingDepth()) {
+                (previousState != null && previousState.getDepth() != configurationManager.getCrawlingDepth())) {
             currentState = new CrawlerState(configurationManager.getCrawlingId(), CrawlerState.State.RUNNING, configurationManager.getCrawlingDepth());
+            crawlerDAO.clearCache();
             crawlerDAO.setCrawlerState(currentState);
         } else if (previousState.getState() == CrawlerState.State.RUNNING) {
             // the crawler was stop before it finished. should be running on recovery mode

@@ -7,6 +7,7 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 
 
 /**
@@ -17,7 +18,7 @@ public class HtmlPageRatioReporter {
     public static String createReport(Collection<HtmlPageMetaData> htmlPageMetaDataElements) {
         StringBuilder report = new StringBuilder();
         report.append("url\tdepth\tratio\n");
-        htmlPageMetaDataElements.stream().forEach(element -> {
+        htmlPageMetaDataElements.stream().sorted(Comparator.comparing(HtmlPageMetaData::getUrl)).forEach(element -> {
             String url = element.getUrl();
             String domainName = getDomainName(url);
             Arrays.asList(element.getDepths()).stream().forEach(depth -> {

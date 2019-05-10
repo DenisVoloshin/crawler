@@ -7,14 +7,14 @@ The bot is designed generic enough which could easily be adjusted to the scalabl
 ## Quick start
 Let's see how easily and quickly you can build and run Web Crawler
 
-* [Design](#design)
+* [Crawler state design](#design)
 * [Work flow](#workflow)  
 * [Build](#build)
 * [Run](#run)
 * [JavaDoc](#javadoc)
 
 
-## <a name="design"></a>Crawler Design Overview
+## <a name="design"></a>Crawler State Design Overview
    
  The Crawler browsing process behaves as a stateful process which is 
  dictated by the following Finite-state machine.

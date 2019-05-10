@@ -10,4 +10,5 @@ public interface CrawlerCache<K, V> {
     void put(K key, V value);
     V get(K key);
     Collection<V> getAllElements();
+    void clear();
 }

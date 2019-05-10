@@ -48,6 +48,9 @@ public class CrawlerDAO {
         crawlerDB.createCollection(CRAWLER_STATE);
     }
 
+    public void clearCache() {
+        crawlerCache.clear();
+    }
 
     public void connect() {
         this.persistentWorkerExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
@@ -60,7 +63,6 @@ public class CrawlerDAO {
             HtmlPageMetaData metaData = new HtmlPageMetaData(metaDateAsString);
             crawlerCache.put(metaData.getUrl(), metaData);
         });
-
     }
 
     public void close() {

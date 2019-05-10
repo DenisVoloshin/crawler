@@ -1,5 +1,6 @@
 package com.analyzary.crawler.monitor;
 
+import java.util.Hashtable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -21,6 +22,7 @@ public class CrawlerMonitor {
     private volatile long notModifiedPages;
     private volatile long skippedPages;
     private volatile long reDownloadedPages;
+    public static Hashtable<String, Integer> duplications = new Hashtable<>();
 
 
     private final ScheduledExecutorService scheduler =
@@ -38,6 +40,17 @@ public class CrawlerMonitor {
 
     private void printMonitorStatus() {
         System.out.println(getFormattedMonitorStatusAsString());
+    }
+
+    public void addProcessedPage(String url) {
+        synchronized (duplications) {
+            if (duplications.get(url) != null) {
+                Integer pageCount = duplications.get(url);
+                duplications.put(url, ++pageCount);
+            } else {
+                duplications.put(url, 1);
+            }
+        }
     }
 
     public void start() {
@@ -64,7 +77,7 @@ public class CrawlerMonitor {
         monitorState.append("Total Processed Pages:\t" + totalProcessedPages + "\n");
         monitorState.append("Successfully Processed Pages:\t" + successfullyProcessedPages + "\n");
         monitorState.append("Not Modified Pages:\t" + notModifiedPages + "\n");
-        monitorState.append("Re downloaded Pages:\t" + reDownloadedPages + "\n");
+        monitorState.append("ReDownloaded Pages:\t" + reDownloadedPages + "\n");
         monitorState.append("Skipped Pages:\t" + skippedPages + "\n");
         monitorState.append("Processed Pages with Error:\t" + processedPagesWithError + "\n");
         monitorState.append("Elapsed Time:\t" + (System.currentTimeMillis() - elapsedTime) + "\n");
@@ -95,12 +108,15 @@ public class CrawlerMonitor {
     public void incrementProcessedPagesWithError() {
         this.processedPagesWithError++;
     }
+
     public void incrementNoModifiedPages() {
         this.notModifiedPages++;
     }
+
     public void incrementSkippedPages() {
         this.skippedPages++;
     }
+
     public void incrementReDownloadedPages() {
         this.reDownloadedPages++;
     }

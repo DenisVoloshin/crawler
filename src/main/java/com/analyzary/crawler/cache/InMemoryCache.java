@@ -35,4 +35,9 @@ public class InMemoryCache implements CrawlerCache<String, HtmlPageMetaData> {
     public Collection<HtmlPageMetaData> getAllElements() {
         return cache.values();
     }
+
+    @Override
+    public void clear() {
+        cache.clear();
+    }
 }
