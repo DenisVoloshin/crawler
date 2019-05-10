@@ -1,6 +1,6 @@
 # Web Crawler
 An Internet bot that knows to browse www to the predefine depth using Breadth-first search (BFS) approach.
-The bot is designed generic enough which could be easily be adjusted to the scalable distributed system. 
+The bot is designed generic enough which could easily be adjusted to the scalable distributed system. 
 ## System Requirements
 * JDK 8 or later
 
@@ -8,7 +8,7 @@ The bot is designed generic enough which could be easily be adjusted to the scal
 Let's see how easily and quickly you can build and run Web Crawler
 
 * [Design](#design)
-* [Sctructure](#modules)  
+* [Work flow](#workflow)  
 * [Build](#build)
 * [Run](#run)
 * [JavaDoc](#javadoc)
@@ -24,6 +24,9 @@ Let's see how easily and quickly you can build and run Web Crawler
  ![](CrawlerStates.png)
  
  
+ ## <a name="workflow"></a>Work flow Overview
+ 
+ ![](clawler-work-flow.png)
  
 ## <a name="build"></a>Build Crawler
 
@@ -33,7 +36,7 @@ Let's see how easily and quickly you can build and run Web Crawler
 
 #### 1. Clone and build a jar file
 
-Clone the repository using git tool, master branch has a latest code
+Clone the repository using git tool, master branch has the latest code
    
 #### 2. Run Build from CMD   
 
