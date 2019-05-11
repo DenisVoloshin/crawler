@@ -9,6 +9,7 @@ Let's see how easily and quickly you can build and run Web Crawler
 
 * [Crawler state design](#design)
 * [Architecture](#architecture)  
+* [Revisit Policy](#revisit)  
 * [Build](#build)
 * [Run](#run)
 * [JavaDoc](#javadoc)
@@ -34,6 +35,8 @@ Let's see how easily and quickly you can build and run Web Crawler
  The current version uses the local FS for data preserving and in-memory cache for 
  better recovery and and efficient later re-visit.
  
+## <a name="revisit"></a>Revisit Policy
+Currently the revisit policy is based only on **Last-Modified / If-Modified-Since** http headers to determine whether a page was updated.
   
 ## <a name="build"></a>Build Crawler
 
