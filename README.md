@@ -8,7 +8,7 @@ The bot is designed generic enough which could easily be adjusted to the scalabl
 Let's see how easily and quickly you can build and run Web Crawler
 
 * [Crawler state design](#design)
-* [Work flow](#workflow)  
+* [Architecture](#architecture)  
 * [Build](#build)
 * [Run](#run)
 * [JavaDoc](#javadoc)
@@ -21,13 +21,20 @@ Let's see how easily and quickly you can build and run Web Crawler
  Each Crawler execution has to be completed if it does not happen, 
  the next execution will be running in the Recovery Mode. 
  
- ![](CrawlerStates.png)
+ ![](crawling-states.png)
  
  
- ## <a name="workflow"></a>Work flow Overview
+ ## <a name="architecture"></a>Architecture of Crawler
+ 
+ The Crawler follows the High-level architecture of a standard Web crawler
  
  ![](clawler-work-flow.png)
  
+ 
+ The current version uses the local FS for data preserving and in-memory cache for 
+ better recovery and and efficient later re-visit.
+ 
+  
 ## <a name="build"></a>Build Crawler
 
 ### Overview
@@ -44,7 +51,7 @@ Clone the repository using git tool, master branch has the latest code
 $ ./gradlew build 
 ```
 
-The artifact crawler-app-<version>.jar will be located in `/build/libs` folder
+The artifact crawler-app-#version#.jar will be located in `/build/libs` folder
 
 ## <a name="usage"></a>Run
 
@@ -62,10 +69,11 @@ The artifact crawler-app-<version>.jar will be located in `/build/libs` folder
 ### Sample
   
 ```bash
-$ java -jar /build/libs/crawler-app-1.0.0.jar -r https://www.lightricks.com -d 2 
+$ java -jar build/libs/crawler-app-1.0.0.jar -r https://www.lightricks.com -d 2 
 ```
 
-The Crawler output file is named domain-ratio-report.tsv
+The Crawler output file with pages domain ratio report
+could be found in working directory, named as domain-ratio-report.tsv
 
 
 ## <a name="javadoc"></a>Java Doc
