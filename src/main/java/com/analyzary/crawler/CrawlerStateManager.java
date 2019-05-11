@@ -25,15 +25,15 @@ public class CrawlerStateManager {
         CrawlerState currentState;
         if (previousState == null ||
                 (previousState != null && previousState.getDepth() != configurationManager.getCrawlingDepth())) {
-            currentState = new CrawlerState(configurationManager.getCrawlingId(), CrawlerState.State.RUNNING, configurationManager.getCrawlingDepth());
+            currentState = new CrawlerState(configurationManager.getCrawlingId(), CrawlerState.State.CRAWLING, configurationManager.getCrawlingDepth());
             crawlerDAO.clearCache();
             crawlerDAO.setCrawlerState(currentState);
-        } else if (previousState.getState() == CrawlerState.State.RUNNING) {
+        } else if (previousState.getState() == CrawlerState.State.CRAWLING) {
             // the crawler was stop before it finished. should be running on recovery mode
             currentState = new CrawlerState(configurationManager.getCrawlingId(), CrawlerState.State.RECOVERY, configurationManager.getCrawlingDepth());
             crawlerDAO.setCrawlerState(currentState);
         } else if (previousState.getState() == CrawlerState.State.COMPLETE) {
-            currentState = new CrawlerState(configurationManager.getCrawlingId(), CrawlerState.State.UPDATE, configurationManager.getCrawlingDepth());
+            currentState = new CrawlerState(configurationManager.getCrawlingId(), CrawlerState.State.RE_VISIT, configurationManager.getCrawlingDepth());
             crawlerDAO.setCrawlerState(currentState);
         } else {
             currentState = previousState;

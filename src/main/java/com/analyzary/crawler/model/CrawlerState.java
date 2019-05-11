@@ -43,10 +43,10 @@ public class CrawlerState {
     }
 
     public enum State {
-        RUNNING,
+        CRAWLING,
         COMPLETE,
         RECOVERY,
-        UPDATE
+        RE_VISIT
 
     }
 

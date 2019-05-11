@@ -68,7 +68,7 @@ public class CrawlerWorker implements Runnable {
         if (htmlPageMetaData != null) {
             // the page already processed before
             if (htmlPageMetaData.getResponseCode() == Connector.OK_200 || htmlPageMetaData.getResponseCode() == Connector.NOT_MODIFIED_304) {
-                if (currentState.getState() != CrawlerState.State.UPDATE) {
+                if (currentState.getState() != CrawlerState.State.RE_VISIT) {
                     CrawlerMonitor.getInstance().incrementSuccessfullyProcessedPages();
                     CrawlerMonitor.getInstance().incrementSkippedPages();
                     htmlPageMetaData.addDepth(depth);
@@ -89,7 +89,7 @@ public class CrawlerWorker implements Runnable {
 
         final HtmlPageMetaData finalHtmlPageMetaData = htmlPageMetaData;
         // the page never was processed or has to be updated.
-        if (currentState.getState() == CrawlerState.State.UPDATE ||
+        if (currentState.getState() == CrawlerState.State.RE_VISIT ||
                 htmlPageMetaData == null) {
 
             final CrawlerRequest.Method method = modificationDate.isEmpty() ? CrawlerRequest.Method.GET :
@@ -146,7 +146,7 @@ public class CrawlerWorker implements Runnable {
                                 newHtmlPageMetaData.setData(data);
                                 crawlerDAO.insertHtmlPageMetaData(url, newHtmlPageMetaData);
                             } else {
-                                if (data.length > 0 && currentState.getState() == CrawlerState.State.UPDATE) {
+                                if (data.length > 0 && currentState.getState() == CrawlerState.State.RE_VISIT) {
                                     CrawlerMonitor.getInstance().incrementReDownloadedPages();
                                 }
                                 finalHtmlPageMetaData.setData(data);
