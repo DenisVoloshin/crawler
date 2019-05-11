@@ -78,6 +78,6 @@ could be found in working directory, named as domain-ratio-report.tsv
 
 ## <a name="javadoc"></a>Java Doc
  
- [Crawler Java doc](https://github.com/TheWeatherCompany/airlock-sdk-java/blob/develop/src/test/java/runner/TestDriver.java)
+ [Crawler Java doc](https://denisvoloshin.github.io/crawler)
      
      
