@@ -53,7 +53,7 @@ public class CrawlerApplication {
 
         AppConfig appConfig = new AppConfig();
         appConfig.setDepth(depthAsInt);
-        appConfig.setDbRootFolder(Paths.get("../").toAbsolutePath().toString() + File.separator + "CrawlerDB");
+        appConfig.setDbRootFolder(Paths.get("").toAbsolutePath().toString() + File.separator + "CrawlerDB");
         appConfig.setRootUrl(rootUrl);
 
         ConfigurationManager configurationManager = ConfigurationManager.getInstance();
