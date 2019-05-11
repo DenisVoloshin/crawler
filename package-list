@@ -1,0 +1,14 @@
+com.analyzary.crawler
+com.analyzary.crawler.analyse
+com.analyzary.crawler.cache
+com.analyzary.crawler.config
+com.analyzary.crawler.dom
+com.analyzary.crawler.executor
+com.analyzary.crawler.model
+com.analyzary.crawler.monitor
+com.analyzary.crawler.net
+com.analyzary.crawler.net.request
+com.analyzary.crawler.parser
+com.analyzary.crawler.queue
+com.analyzary.crawler.storage
+com.analyzary.crawler.util
