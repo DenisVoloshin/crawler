@@ -75,6 +75,12 @@ The artifact crawler-app-#version#.jar will be located in `/build/libs` folder
 $ java -jar build/libs/crawler-app-1.0.0.jar -r https://www.lightricks.com -d 2 
 ```
 
+### Delete local DB
+```bash
+$ ./gradlew deleteDB
+```
+
+
 The Crawler output file with pages domain ratio report
 could be found in working directory, named as domain-ratio-report.tsv
 
